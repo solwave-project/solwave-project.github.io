@@ -10,6 +10,10 @@ body {
     color: white;
 }
 
+main {
+    padding: 40px 100px;
+}
+
 header {
     background-color: #1A1F39;
     padding: 0;
@@ -78,9 +82,85 @@ button:hover {
     background-color: #28b2b3;
 }
 
+#map {
+    height: 700px;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
 footer {
     text-align: center;
     padding: 20px;
     background-color: #1A1F39;
     border-top: 2px solid #414865;
+}
+
+.charts-section {
+    padding: 40px 0;
+    /* background-color: #2A2F4F; */
+}
+
+.charts-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.chart {
+    width: 45%;
+    min-width: 300px;
+    margin: 20px 0;
+    background-color: #2A2F4F;
+    padding: 20px;
+    border-radius: 8px;
+    color: #fff;
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+}
+
+.charts-section h2,
+.charts-section p {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+/* Spacing for button in map-controls */
+.map-controls button {
+    margin-top: 12px;
+    margin-bottom: 8px;
+}
+
+.coordinates-section {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* Spacing for h3 in coordinates-section */
+.coordinates-section h3 {
+    margin: 0;
+    margin-right: 4px;
+    white-space: nowrap;
+}
+
+.coordinates-section #coordinatesDisplay {
+    display: flex;
+    gap: 20px;
+}
+
+/* Remove default margin from paragraphs within coordinatesDisplay */
+.coordinates-section #coordinatesDisplay p {
+    margin: 0;
+}
+
+.chart h3 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 800px) {
+    .chart {
+        width: 100%;
+    }
 }

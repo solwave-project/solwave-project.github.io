@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Solwave Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        /* Additional Styles for better UI */
+        #loginFormContainer,
+        #mainContent {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        #loginError {
+            color: red;
+            margin-top: 10px;
+        }
+
+        /* Optional: Add responsiveness */
+        @media (max-width: 600px) {
+
+            input,
+            select,
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Login Form Container -->
+    <div id="loginFormContainer">
+        <h2>Admin Login</h2>
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit">Login</button>
+        </form>
+        <div id="loginError"></div>
+    </div>
+
+    <!-- Main Content Container (Hidden by default) -->
+    <div id="mainContent" class="hidden">
+        <h1>Solwave Admin Dashboard</h1>
+
+        <nav id="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#latestStatus">Latest Robot Status</a></li>
+                <li><a href="#assignConfig">Assign Config</a></li>
+                <li><a href="#allConfigs">All Configurations</a></li>
+                <li><a href="#assignSolTask">Assign SolTask</a></li>
+                <li><a href="#allTasks">All Tasks</a></li>
+                <li><a href="#combinedData">Collected Data</a></li>
+            </ul>
+        </nav>
+
+        <!-- Latest Robot Status Section -->
+        <div class="section" id="latestStatus">
+            <h2>Latest Robot Status</h2>
+            <table id="statusTable">
+                <thead>
+                    <tr>
+                        <th>Robot ID</th>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
+                        <th>Collected</th>
+                        <th>Received</th>
+                        <th>Battery Level</th>
+                        <th>Signal Strength</th>
+                        <th>Current Task ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Assign Config Section -->
+        <div class="section" id="assignConfig">
+            <h2>Assign Config</h2>
+            <form id="configForm">
+                <label for="robotid">Robot ID:</label>
+                <input type="text" id="robotid" name="robotid" required>
+
+                <label for="assignType">Assign Type:</label>
+                <select id="assignType" name="assignType" required>
+                    <option value="">--Select--</option>
+                    <option value="new">New Configuration</option>
+                    <option value="existing">Existing Configuration</option>
+                </select>
+
+                <!-- New Configuration Fields -->
+                <div id="newConfigFields" style="display:none;">
+                    <label for="maxthrust">Max Thrust:</label>
+                    <input type="number" id="maxthrust" name="maxthrust" required>
+
+                    <label for="originlat">Origin Latitude:</label>
+                    <input type="number" step="any" id="originlat" name="originlat" required>
+
+                    <label for="originlong">Origin Longitude:</label>
+                    <input type="number" step="any" id="originlong" name="originlong" required>
+
+                    <label for="taskinterval">Task Interval:</label>
+                    <input type="number" id="taskinterval" name="taskinterval" required>
+
+                    <label for="tempinterval">Temperature Interval:</label>
+                    <input type="number" id="tempinterval" name="tempinterval" required>
+
+                    <label for="turbinterval">Turbidity Interval:</label>
+                    <input type="number" id="turbinterval" name="turbinterval" required>
+                </div>
+
+                <!-- Existing Configuration Fields -->
+                <div id="existingConfigFields" style="display:none;">
+                    <label for="existingConfig">Select Existing Config ID:</label>
+                    <select id="existingConfig" name="existingConfig">
+                        <option value="">--Select--</option>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                </div>
+
+                <button type="submit">Assign Config</button>
+            </form>
+            <div id="configResult"></div>
+        </div>
+
+        <!-- All Configurations Section -->
+        <div class="section" id="allConfigs">
+            <h2>All Configurations</h2>
+            <table id="configsTable">
+                <thead>
+                    <tr>
+                        <th>Config ID</th>
+                        <th>Max Thrust</th>
+                        <th>Origin Latitude</th>
+                        <th>Origin Longitude</th>
+                        <th>Task Interval</th>
+                        <th>Temperature Interval</th>
+                        <th>Turbidity Interval</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Assign SolTask Section -->
+        <div class="section" id="assignSolTask">
+            <h2>Assign SolTask</h2>
+            <form id="solTaskForm">
+                <label for="robotidTask">Robot ID:</label>
+                <input type="text" id="robotidTask" name="robotid" required>
+
+                <label for="latitudeTask">Latitude:</label>
+                <input type="number" step="any" id="latitudeTask" name="latitude" required>
+
+                <label for="longitudeTask">Longitude:</label>
+                <input type="number" step="any" id="longitudeTask" name="longitude" required>
+
+                <button type="submit">Assign SolTask</button>
+            </form>
+            <div id="solTaskResult"></div>
+        </div>
+
+        <!-- All Tasks Section -->
+        <div class="section" id="allTasks">
+            <h2>All Tasks</h2>
+            <table id="tasksTable">
+                <thead>
+                    <tr>
+                        <th>Task ID</th>
+                        <th>Robot ID</th>
+                        <th>Status</th>
+                        <th>Started At</th>
+                        <th>Ended At</th>
+                        <th>Received</th>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
+                        <th>Until</th>
+                        <th>Stoptime</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be populated by JavaScript -->
+                </tbody>
+            </table>
+            <div id="tasksError" style="color: red;"></div>
+        </div>
+
+        <!-- Collected Data Section -->
+        <div class="section" id="combinedData">
+            <h2>Collected Data</h2>
+            <table id="combinedDataTable">
+                <thead>
+                    <tr>
+                        <th>Robot ID</th>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
+                        <th>Collected</th>
+                        <th>Received</th>
+                        <th>Value</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        const BASE_URL = 'http://solwave.13e.hk:443';
+        // Handle Admin Login
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent form from submitting the traditional way
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            // Simple validation
+            if (username === "" || password === "") {
+                document.getElementById('loginError').innerText = 'Please enter both username and password.';
+                return;
+            }
+
+            // Send login request
+            fetch(`${BASE_URL}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Hide login form and show main content
+                        document.getElementById('loginFormContainer').classList.add('hidden');
+                        document.getElementById('mainContent').classList.remove('hidden');
+
+                        // Initialize dashboard functionalities
+                        initializeDashboard();
+                    } else {
+                        // Display error message
+                        document.getElementById('loginError').innerText = data.message || 'Login failed.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during login:', error);
+                    document.getElementById('loginError').innerText = 'An error occurred during login.';
+                });
+        });
+
+        // Handle Assign Type selection
+        document.getElementById('assignType').addEventListener('change', function () {
+            const value = this.value;
+            const newConfigFields = document.getElementById('newConfigFields');
+            const existingConfigFields = document.getElementById('existingConfigFields');
+
+            if (value === 'new') {
+                newConfigFields.style.display = 'block';
+                existingConfigFields.style.display = 'none';
+                setRequiredAttributes(true);
+            } else if (value === 'existing') {
+                newConfigFields.style.display = 'none';
+                existingConfigFields.style.display = 'block';
+                setRequiredAttributes(false);
+                fetchConfigs();
+            } else {
+                newConfigFields.style.display = 'none';
+                existingConfigFields.style.display = 'none';
+                setRequiredAttributes(false);
+            }
+        });
+
+        // Function to set or unset 'required' attribute
+        function setRequiredAttributes(isRequired) {
+            document.getElementById('maxthrust').required = isRequired;
+            document.getElementById('originlat').required = isRequired;
+            document.getElementById('originlong').required = isRequired;
+            document.getElementById('taskinterval').required = isRequired;
+            document.getElementById('tempinterval').required = isRequired;
+            document.getElementById('turbinterval').required = isRequired;
+        }
+
+        // Initialize Dashboard Functions
+        function initializeDashboard() {
+            fetchLatestStatus();
+            fetchCombinedData();
+            fetchConfigs();
+            fetchAllTasks(); // Initial fetch
+            setInterval(fetchLatestStatus, 30000); // 30 seconds
+            setInterval(fetchCombinedData, 30000); // 30 seconds
+            setInterval(fetchConfigs, 30000); // 30 seconds
+            setInterval(fetchAllTasks, 30000); // 30 seconds
+        }
+
+        function fetchConfigs() {
+            fetch(`${BASE_URL}/getconfigs`)
+                .then(response => response.json())
+                .then(data => {
+                    const configSelect = document.getElementById('existingConfig'); // Updated ID
+                    configSelect.innerHTML = '<option value="">--Select Config ID--</option>'; // Reset options
+
+                    data.forEach(config => {
+                        const option = document.createElement('option');
+                        option.value = config.config_id;
+                        option.text = `ID: ${config.config_id}`;
+                        configSelect.appendChild(option);
+                    });
+
+                    // Populate the All Configurations table
+                    populateConfigsTable(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching configs:', error);
+                });
+        }
+
+        // Populate the All Configurations table
+        function populateConfigsTable(configs) {
+            const tbody = document.querySelector('#configsTable tbody');
+            tbody.innerHTML = ''; // Clear existing rows
+
+            configs.forEach(configEntry => {
+                const config = configEntry.config;
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+            <td>${configEntry.config_id}</td>
+            <td>${config.maxthrust}</td>
+            <td>${config.originlat}</td>
+            <td>${config.originlong}</td>
+            <td>${config.taskinterval}</td>
+            <td>${config.tempinterval}</td>
+            <td>${config.turbinterval}</td>
+        `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        // Assign Config
+        document.getElementById('configForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const assignType = document.getElementById('assignType').value;
+            const robotid = document.getElementById('robotid').value;
+
+            let data = {
+                robotid: robotid
+            };
+
+            if (assignType === 'new') {
+                data.maxthrust = parseInt(document.getElementById('maxthrust').value);
+                data.originlat = parseFloat(document.getElementById('originlat').value);
+                data.originlong = parseFloat(document.getElementById('originlong').value);
+                data.taskinterval = parseInt(document.getElementById('taskinterval').value);
+                data.tempinterval = parseInt(document.getElementById('tempinterval').value);
+                data.turbinterval = parseInt(document.getElementById('turbinterval').value);
+            } else if (assignType === 'existing') {
+                const configId = parseInt(document.getElementById('configid').value);
+                console.out(configId);
+                if (isNaN(configId)) {
+                    document.getElementById('configResult').innerText = 'Please select a valid Config ID.';
+                    return;
+                }
+                data.config_id = configId;
+            } else {
+                document.getElementById('configResult').innerText = 'Please select an assignment type.';
+                return;
+            }
+
+            fetch(`${BASE_URL}/assignconfig`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(res => res.json())
+                .then(response => {
+                    document.getElementById('configResult').innerText = JSON.stringify(response);
+                })
+                .catch(error => {
+                    document.getElementById('configResult').innerText = 'Error: ' + error;
+                });
+        });
+
+        // Assign SolTask
+        document.getElementById('solTaskForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const robotid = document.getElementById('robotidTask').value;
+            const latitude = parseFloat(document.getElementById('latitudeTask').value);
+            const longitude = parseFloat(document.getElementById('longitudeTask').value);
+            const taskParam = document.getElementById('taskParam').value;
+
+            let data = {
+                robotid: robotid,
+                latitude: latitude,
+                longitude: longitude
+            };
+
+            if (taskParam === 'stoptime') {
+                data.stoptime = parseInt(document.getElementById('stoptime').value);
+            } else if (taskParam === 'until') {
+                data.until = parseInt(document.getElementById('until').value);
+            } else {
+                document.getElementById('solTaskResult').innerText = 'Please select a parameter type.';
+                return;
+            }
+
+            fetch(`${BASE_URL}/assignsoltask`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(res => res.json())
+                .then(response => {
+                    document.getElementById('solTaskResult').innerText = JSON.stringify(response);
+                    fetchTasks(); // Refresh tasks after assigning a new one
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('solTaskResult').innerText = 'An error occurred.';
+                });
+        });
+
+        // Fetch and display tasks
+        function fetchTasks() {
+            fetch(`${BASE_URL}/showalltasks`)
+                .then(response => response.json())
+                .then(data => {
+                    const tasksDiv = document.getElementById('tasks');
+                    tasksDiv.innerHTML = ''; // Clear previous tasks
+                    data.forEach(task => {
+                        const taskElement = document.createElement('div');
+                        taskElement.textContent = `Task: ${task.task}, Duration: ${task.duration} seconds`;
+                        tasksDiv.appendChild(taskElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('tasks').textContent = 'An error occurred while fetching tasks.';
+                });
+        }
+
+        // Fetch Latest Status
+        function fetchLatestStatus() {
+            fetch(`${BASE_URL}/getlateststatus`)
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#statusTable tbody');
+                    tbody.innerHTML = ''; // Clear existing rows
+
+                    data.forEach(entry => {
+                        // Parse the timestamps
+                        const collectedDate = new Date(entry.collected);
+                        const receivedDate = new Date(entry.received);
+
+                        // Format the dates with timezone
+                        const options = {
+                            timeZone: 'Asia/Hong_Kong',
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: false
+                        };
+                        const collectedStr = collectedDate.toLocaleString('en-US', options);
+                        const receivedStr = receivedDate.toLocaleString('en-US', options);
+
+                        const row = document.createElement('tr');
+
+                        row.innerHTML = `
+                        <td>${entry.robot_id}</td>
+                        <td>${entry.latitude}</td>
+                        <td>${entry.longitude}</td>
+                        <td>${collectedStr}</td>
+                        <td>${receivedStr}</td>
+                        <td>${entry.battery_level !== null ? entry.battery_level : 'N/A'}</td>
+                        <td>${entry.signal_strength !== null ? entry.signal_strength : 'N/A'}</td>
+                        <td>${entry.current_task_id !== null ? entry.current_task_id : 'N/A'}</td>
+                    `;
+
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching latest status:', error);
+                });
+        }
+
+        // Fetch Combined Data
+        function fetchCombinedData() {
+            fetch(`${BASE_URL}/getcombineddata`)
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#combinedDataTable tbody');
+                    tbody.innerHTML = ''; // Clear existing rows
+
+                    data.forEach(entry => {
+                        // Parse the timestamps
+                        const collectedDate = new Date(entry.collected);
+                        const receivedDate = new Date(entry.received);
+
+                        // Format the dates with timezone
+                        const options = {
+                            timeZone: 'Asia/Hong_Kong',
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: false
+                        };
+                        const collectedStr = collectedDate.toLocaleString('en-US', options);
+                        const receivedStr = receivedDate.toLocaleString('en-US', options);
+
+                        const row = document.createElement('tr');
+
+                        row.innerHTML = `
+                        <td>${entry.robot_id}</td>
+                        <td>${entry.latitude}</td>
+                        <td>${entry.longitude}</td>
+                        <td>${collectedStr}</td>
+                        <td>${receivedStr}</td>
+                        <td>${entry.value}</td>
+                        <td>${entry.type}</td>
+                    `;
+
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching combined data:', error);
+                });
+        }
+
+        function fetchAllTasks() {
+            fetch(`${BASE_URL}/getalltasks`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Sort tasks by task_id in descending order
+                    data.sort((a, b) => b.task_id - a.task_id);
+
+                    const tbody = document.querySelector('#tasksTable tbody');
+                    tbody.innerHTML = ''; // Clear existing rows
+                    const tasksError = document.getElementById('tasksError');
+                    tasksError.innerText = ''; // Clear previous errors
+
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="10">No tasks available.</td></tr>';
+                        return;
+                    }
+
+                    data.forEach(task => {
+                        const row = document.createElement('tr');
+
+                        // Format timestamps
+                        const formatTimestamp = (timestamp) => {
+                            if (!timestamp) return 'N/A';
+                            const date = new Date(timestamp);
+                            return date.toLocaleString('en-US', {
+                                timeZone: 'Asia/Hong_Kong',
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit',
+                                hour12: false
+                            });
+                        };
+
+                        const startedStr = formatTimestamp(task.started);
+                        const endedStr = formatTimestamp(task.ended);
+                        const receivedStr = formatTimestamp(task.received);
+                        const untilStr = formatTimestamp(task.until);
+                        const stoptimeStr = (task.stoptime !== null) ? task.stoptime : 'N/A';
+
+                        // Map status codes to descriptive strings
+                        const statusMap = {
+                            1: "Not received (1)",
+                            2: "Received, not started (2)",
+                            3: "Received & started (3)",
+                            4: "Received & ended (4)",
+                            5: "Received & ended, not communicated (5)"
+                        };
+                        const statusStr = statusMap[task.status] || 'Unknown';
+
+                        row.innerHTML = `
+                    <td>${task.task_id}</td>
+                    <td>${task.robot_id}</td>
+                    <td>${statusStr}</td>
+                    <td>${startedStr}</td>
+                    <td>${endedStr}</td>
+                    <td>${receivedStr}</td>
+                    <td>${task.latitude}</td>
+                    <td>${task.longitude}</td>
+                    <td>${untilStr}</td>
+                    <td>${stoptimeStr}</td>
+                `;
+
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching all tasks:', error);
+                    document.getElementById('tasksError').innerText = 'Failed to load tasks.';
+                });
+        }
+
+        document.getElementById('taskParam').addEventListener('change', function () {
+            const value = this.value;
+            const stoptimeField = document.getElementById('stoptimeField');
+            const untilField = document.getElementById('untilField');
+
+            if (value === 'stoptime') {
+                stoptimeField.style.display = 'block';
+                untilField.style.display = 'none';
+                document.getElementById('stoptime').setAttribute('required', 'required');
+                document.getElementById('until').removeAttribute('required');
+            } else if (value === 'until') {
+                stoptimeField.style.display = 'none';
+                untilField.style.display = 'block';
+                document.getElementById('stoptime').removeAttribute('required');
+                document.getElementById('until').setAttribute('required', 'required');
+            } else {
+                stoptimeField.style.display = 'none';
+                untilField.style.display = 'none';
+                document.getElementById('stoptime').removeAttribute('required');
+                document.getElementById('until').removeAttribute('required');
+            }
+        });
+
+        // Fetch tasks when the page loads and set interval to update every 30 seconds
+        // window.onload = function () {
+        //     if (!document.getElementById('mainContent').classList.contains('hidden')) {
+        //         fetchLatestStatus();
+        //         fetchCombinedData();
+        //         fetchConfigs();
+        //         fetchAllTasks(); // Initial fetch
+        //         setInterval(fetchLatestStatus, 30000); // 30 seconds
+        //         setInterval(fetchCombinedData, 30000); // 30 seconds
+        //         setInterval(fetchConfigs, 30000); // 30 seconds
+        //         setInterval(fetchAllTasks, 30000); // 30 seconds
+        //     }
+        // };
+    </script>
+</body>
+
+</html>
